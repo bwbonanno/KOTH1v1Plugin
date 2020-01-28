@@ -2,7 +2,8 @@
 #pragma comment( lib, "bakkesmod.lib" )
 #include "bakkesmod/plugin/bakkesmodplugin.h"
 
-#define VERSION "0.20"
+#define VERSION "0.22"
+#define DEBUG 1
 
 struct Popup
 {
@@ -13,21 +14,27 @@ struct Popup
 
 class KOTH1v1Plugin : public BakkesMod::Plugin::BakkesModPlugin
 {
-public:
+private:
 	map<unsigned long long, int> goalMap;
 	unsigned long long lastTouchID = 0LL;
-	bool fixing = true;
+	int kingTeamID;
+	int notKingTeamID;
 
-	virtual void onLoad();
-	virtual void onUnload();
-	void actionLastGoal();
-	void cachePlayerScores(bool clear);
-	string getTeamNameByNumber(int teamNumber);
-	int getTeamNumberByName(string teamName);
-	void OnScoreUpdated(string eventName);
-	void OnHitBall(string eventName);
-	void OnSpawn(string eventName);
+	void debugLog(string);
+	int getTeamNumberByName(string);
+	void initializeTeamIDs();
+	void hookIfKOTH(string);
+	void unhookKOTHEvents(string);
+	void cachePlayerScores(bool);
+	PriWrapper* findSelfPri(ServerWrapper);
 	PriWrapper* getLastGoalPri();
-	string getPlayerNameByID(unsigned long long userID);
+	void changeTeam(PriWrapper*);
+public:
+	virtual void OnLoad();
+	virtual void OnUnload();
+	void OnScoreUpdated(string);
+	void OnHitBall(string);
+	void OnLastGoal();
+	void SpawnSpectator(string);
 };
 
